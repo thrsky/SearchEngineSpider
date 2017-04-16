@@ -25,4 +25,4 @@ class JobboleArticleItem(scrapy.Item):
     collect=scrapy.Field()
     tags=scrapy.Field()
     content=scrapy.Field()
-    autor=scrapy.Field()
+    #autor=scrapy.Field()

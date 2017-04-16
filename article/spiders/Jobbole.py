@@ -42,7 +42,7 @@ class JobboleSpider(scrapy.Spider):
         front_image_url=response.meta.get("front_image_url","")
         title = response.xpath('//*[@class="entry-header"]/h1/text()').extract_first("")
         create_date = response.xpath('//*[@class="entry-meta"]/p[1]/text()').extract()[0].strip().replace("·","").strip()
-        autor = response.xpath('//*[@class="copyright-area"]/a/text()').extract()[0]
+        #autor = response.xpath('//*[@class="copyright-area"]/a/text()').extract()[0]
         content=response.xpath('//div[@class="entry"]').extract()[0]
         #文章标签
         classfiy_list=response.xpath('//p[@class="entry-meta-hide-on-mobile"]/a/text()').extract()[0]
@@ -75,6 +75,6 @@ class JobboleSpider(scrapy.Spider):
         jobble_item["remark"]=remark
         jobble_item["tags"]=tags
         jobble_item["content"]=content
-        jobble_item["autor"]=autor
+        #jobble_item["autor"]=autor
 
         yield jobble_item
