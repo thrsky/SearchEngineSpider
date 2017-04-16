@@ -68,6 +68,10 @@ class JobboleSpider(scrapy.Spider):
         jobble_item["title"]=title
         jobble_item["url"]=response.url
         jobble_item["url_object_id"]=get_md5(response.url)
+        try:
+            create_date = datetime.datetime.strftime(create_date,"%Y/%m/%d").date()
+        except Exception as e:
+            create_date = datetime.datetime.now().date()
         jobble_item["create_date"]=create_date
         jobble_item["front_image_url"]=[front_image_url]
         jobble_item["zan"]=zan
