@@ -8,7 +8,7 @@ from scrapy.pipelines.images import ImagesPipeline
 import codecs
 import json
 from scrapy.exporters import JsonItemExporter
-
+import pymysql
 
 class ArticlePipeline(object):
     def process_item(self, item, spider):
@@ -42,6 +42,19 @@ class JsonExporterPipeline(object):
     def process_item(self, item, spider):
         self.exporter.export_item(item)
         return item
+
+class MysqlPipeline(object):
+    def __init__(self):
+        self.connect = pymysql.connect('localhost','root','19960411','articleSpider',charset="utf8",use_unicode=True)
+        self.cursor=self.connect.cursor()
+
+    def process_item(self,item,spider):
+        insert_sql="""
+            insert into jobbole_article(title,url,url_object_id,front_image_url,front_image_path,create_date,zan,remark,collect,tags,content)
+            VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+        """
+        self.cursor.execute(insert_sql,(item["title"],item["url"],item["url_object_id"],item["front_image_url"],item["front_image_path"],item["create_date"],item["zan"],item["remark"],item["collect"],item["tags"],item["content"]))
+        self.connect.commit()
 
 
 class ArticleImagePipeline(ImagesPipeline):

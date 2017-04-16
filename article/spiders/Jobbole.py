@@ -49,7 +49,7 @@ class JobboleSpider(scrapy.Spider):
         classfiy_list = [tag for tag in classfiy_list if not tag.strip().endswith("评论")]
         tags = (",").join(classfiy_list)
         #赞数
-        zan=response.xpath('//span[contains(@class,"vote-post-up")]/h10/text()').extract()[0]
+        zan=int(response.xpath('//span[contains(@class,"vote-post-up")]/h10/text()').extract()[0])
         #评论
         remark=response.xpath('//span[contains(@class,"btn-bluet-bigger")]/text()').extract()[3]
         match_re=re.match(".*(\d+),*",remark)
