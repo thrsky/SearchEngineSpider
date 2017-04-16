@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-
+import os
 # Scrapy settings for article project
 #
 # For simplicity, this file contains only settings considered important or
@@ -39,10 +39,12 @@ ROBOTSTXT_OBEY = False
 #TELNETCONSOLE_ENABLED = False
 
 # Override the default request headers:
-#DEFAULT_REQUEST_HEADERS = {
-#   'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-#   'Accept-Language': 'en',
-#}
+DEFAULT_REQUEST_HEADERS = {
+   'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+   'Accept-Language': 'en',
+   'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.133 Safari/537.36',
+
+}
 
 # Enable or disable spider middlewares
 # See http://scrapy.readthedocs.org/en/latest/topics/spider-middleware.html
@@ -64,9 +66,18 @@ ROBOTSTXT_OBEY = False
 
 # Configure item pipelines
 # See http://scrapy.readthedocs.org/en/latest/topics/item-pipeline.html
-#ITEM_PIPELINES = {
-#    'article.pipelines.SomePipeline': 300,
-#}
+ITEM_PIPELINES = {
+    'article.pipelines.ArticlePipeline': 300,
+    'scrapy.pipelines.images.ImagesPipeline':1,
+    'article.pipelines.ArticleImagePipeline':1,
+}
+IMAGES_URLS_FIELD="front_image_url"
+project_dir = os.path.abspath(os.path.dirname(__file__))
+IMAGES_STORE= os.path.join(project_dir,"images")
+
+IMAGE_MIN_HEIGHT = 100
+IMAGE_MIN_WIDTH = 100
+
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See http://doc.scrapy.org/en/latest/topics/autothrottle.html
