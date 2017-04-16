@@ -52,14 +52,14 @@ class JobboleSpider(scrapy.Spider):
         zan=int(response.xpath('//span[contains(@class,"vote-post-up")]/h10/text()').extract()[0])
         #评论
         remark=response.xpath('//span[contains(@class,"btn-bluet-bigger")]/text()').extract()[3]
-        match_re=re.match(".*(\d+),*",remark)
+        match_re=re.match(".*?(\d+).*",remark)
         if match_re:
             remark=int(match_re.group(1))
         else:
             remark=0
         #收藏
         collect=response.xpath('//span[contains(@class,"btn-bluet-bigger")]/text()').extract()[2]
-        match_re = re.match(".*(\d+),*", collect)
+        match_re = re.match(".*?(\d+).*", collect)
         if match_re:
             collect =int(match_re.group(1))
         else:
