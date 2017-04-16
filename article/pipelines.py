@@ -8,7 +8,9 @@ from scrapy.pipelines.images import ImagesPipeline
 import codecs
 import json
 from scrapy.exporters import JsonItemExporter
+from twisted.enterprise import adbapi
 import pymysql
+import pymysql.cursors
 
 class ArticlePipeline(object):
     def process_item(self, item, spider):
@@ -56,7 +58,49 @@ class MysqlPipeline(object):
         self.cursor.execute(insert_sql,(item["title"],item["url"],item["url_object_id"],item["front_image_url"],item["front_image_path"],item["create_date"],item["zan"],item["remark"],item["collect"],item["tags"],item["content"]))
         self.connect.commit()
 
+#===================================================================================
 
+#异步化数据库插入
+class MysqlTwistedPipline(object):
+    def __init__(self, dbpool):
+        self.dbpool = dbpool
+
+    @classmethod
+    def from_settings(cls, settings):
+        dbparms = dict(
+            host = settings["MYSQL_HOST"],
+            db = settings["MYSQL_DBNAME"],
+            user = settings["MYSQL_USER"],
+            passwd = settings["MYSQL_PASSWORD"],
+            charset='utf8',
+            cursorclass=pymysql.cursors.DictCursor,
+            use_unicode=True,
+        )
+        dbpool = adbapi.ConnectionPool("pymysql", **dbparms)
+
+        return cls(dbpool)
+
+    def process_item(self, item, spider):
+        #使用twisted将mysql插入变成异步执行
+        query = self.dbpool.runInteraction(self.do_insert, item)
+        query.addErrback(self.handle_error, item, spider) #处理异常
+
+    def handle_error(self, failure, item, spider):
+        # 处理异步插入的异常
+        print (failure)
+
+    def do_insert(self,cursor,item):
+        #执行具体插入
+        insert_sql = """
+                    insert into jobbole_article(title,url,url_object_id,front_image_url,front_image_path,create_date,zan,remark,collect,tags,content)
+                    VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+                """
+        cursor.execute(insert_sql, (
+        item["title"], item["url"], item["url_object_id"], item["front_image_url"], item["front_image_path"],
+        item["create_date"], item["zan"], item["remark"], item["collect"], item["tags"], item["content"]))
+
+
+#============================================================================================
 class ArticleImagePipeline(ImagesPipeline):
     #图片下载
     def item_completed(self, results, item, info):

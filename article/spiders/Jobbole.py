@@ -45,7 +45,7 @@ class JobboleSpider(scrapy.Spider):
         #autor = response.xpath('//*[@class="copyright-area"]/a/text()').extract()[0]
         content=response.xpath('//div[@class="entry"]').extract()[0]
         #文章标签
-        classfiy_list=response.xpath('//p[@class="entry-meta-hide-on-mobile"]/a/text()').extract()[0]
+        classfiy_list=response.xpath('//p[@class="entry-meta-hide-on-mobile"]/a/text()').extract()
         classfiy_list = [tag for tag in classfiy_list if not tag.strip().endswith("评论")]
         tags = (",").join(classfiy_list)
         #赞数
