@@ -12,6 +12,7 @@ from twisted.enterprise import adbapi
 import pymysql
 import pymysql.cursors
 
+
 class ArticlePipeline(object):
     def process_item(self, item, spider):
         return item
@@ -30,6 +31,7 @@ class JsonWithEncodingPipeline(object):
     def spider_closed(self,spider):
         self.file.close()
 
+
 class JsonExporterPipeline(object):
     #调用scrapy提供的json export导出json文件
     def __init__(self):
@@ -45,6 +47,7 @@ class JsonExporterPipeline(object):
         self.exporter.export_item(item)
         return item
 
+
 class MysqlPipeline(object):
     def __init__(self):
         self.connect = pymysql.connect('localhost','root','19960411','articleSpider',charset="utf8",use_unicode=True)
@@ -59,6 +62,7 @@ class MysqlPipeline(object):
         self.connect.commit()
 
 #===================================================================================
+
 
 #异步化数据库插入
 class MysqlTwistedPipline(object):
@@ -101,10 +105,13 @@ class MysqlTwistedPipline(object):
 
 
 #============================================================================================
+
+
 class ArticleImagePipeline(ImagesPipeline):
     #图片下载
     def item_completed(self, results, item, info):
-        for ok,value in results:
-            image_file_path = value["path"]
-        item["front_image_path"]=image_file_path
+        if "front_image_url" in item:
+            for ok,value in results:
+                image_file_path = value["path"]
+            item["front_image_path"]=image_file_path
         return item
