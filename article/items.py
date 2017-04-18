@@ -10,7 +10,7 @@ from scrapy.loader.processors import MapCompose,TakeFirst,Join
 import datetime
 import re
 from scrapy.loader import ItemLoader
-
+from article.utils.common import extract_num
 
 class ArticleItem(scrapy.Item):
     # define the fields for your item here like:
@@ -81,23 +81,63 @@ class JobboleArticleItem(scrapy.Item):
     content=scrapy.Field()
     #autor=scrapy.Field()
 
+#============================================================================
 
+def remove_splash(value):
+    return value.replace("/","")
+
+
+def getJob_addr(value):
+    li=re.findall(r'([\u4e00-\u9fa5].*[\u4e00-\u9fa5])',value)
+    try:
+        li.remove("查看地图")
+    except Exception as e:
+        pass
+    return (" - ").join(li)
+
+#拉钩网信息Item
 class LagouJobItem(scrapy.Item):
     url=scrapy.Field()
     url_object_id=scrapy.Field()
     title=scrapy.Field()
     salary_min=scrapy.Field()
     salary_max=scrapy.Field()
-    job_city=scrapy.Field()
+    job_city=scrapy.Field(
+        input_processor=MapCompose(remove_splash)
+    )
     work_years_min=scrapy.Field()
     work_years_max=scrapy.Field()
-    degree_need=scrapy.Field()
+    degree_need=scrapy.Field(
+        input_processor=MapCompose(remove_splash)
+    )
+    degree_need=scrapy.Field(
+        input_processor=MapCompose(remove_splash)
+    )
     job_time=scrapy.Field()
     publish_time=scrapy.Field()
-    tags=scrapy.Field()
+    tags=scrapy.Field(
+        output_processor=Join(",")
+    )
     job_advantage=scrapy.Field()
-    job_desc=scrapy.Field()
-    job_addr=scrapy.Field()
+    job_desc=scrapy.Field(
+        input_processor=MapCompose(getJob_addr)
+    )
+    job_addr=scrapy.Field(
+        input_processor=MapCompose(getJob_addr)
+    )
     company=scrapy.Field()
     company_url=scrapy.Field()
     crawl_time=scrapy.Field()
+
+    def get_insert_sql(self):
+        insert_sql="""
+            insert into lagou_job(title,url,url_object_id,salary_min,salary_max,job_city,work_years_min,
+              work_years_max,degree_need,job_time,publish_time,tags,job_advantage,job_desc,job_addr,company,company_url,crawl_time)
+            VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+        """
+        parms=(
+            self["title"],self["url"],self["url_object_id"],self["salary_min"],self["salary_max"],self["job_city"],
+            self["work_years_min"],self["work_years_max"],self["degree_need"],self["job_time"],
+            self["publish_time"],self["tags"],self["job_advantage"],self["job_desc"],self["job_addr"],self["company"],self["company_url"],self["crawl_time"]
+        )
+        return insert_sql,parms
