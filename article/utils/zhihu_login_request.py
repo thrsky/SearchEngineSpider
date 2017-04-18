@@ -63,10 +63,8 @@ def get_xsrf():
     response = session.get("https://www.zhihu.com", headers=header)
     match_obj = re.match('.*name="_xsrf" value="(.*?)"', response.text)
     if match_obj:
-        print("已经登录")
         return (match_obj.group(1))
     else:
-        print("未登录")
         return ""
 
 
@@ -95,6 +93,7 @@ def zhihu_login(account,passwd):
     response_text = session.post(post_url, data=post_data, headers=header)
     # 保存cookie
     session.cookies.save()
+#
+# is_login()
+# zhihu_login("18858903314","19960411kang")
 
-is_login()
-zhihu_login("18858903314","19960411kang")

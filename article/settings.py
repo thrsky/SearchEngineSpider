@@ -81,7 +81,10 @@ IMAGES_STORE= os.path.join(project_dir,"images")
 IMAGE_MIN_HEIGHT = 100
 IMAGE_MIN_WIDTH = 100
 
-
+import sys
+BASE_DIR=os.path.dirname(os.path.abspath(os.path.dirname(__file__)))
+print(BASE_DIR)
+sys.path.insert(0,os.path.join(BASE_DIR,'article'))
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See http://doc.scrapy.org/en/latest/topics/autothrottle.html
 #AUTOTHROTTLE_ENABLED = True
