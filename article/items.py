@@ -141,3 +141,48 @@ class LagouJobItem(scrapy.Item):
             self["publish_time"],self["tags"],self["job_advantage"],self["job_desc"],self["job_addr"],self["company"],self["company_url"],self["crawl_time"]
         )
         return insert_sql,parms
+
+
+#================================================================================================
+#import new 网站文章爬取
+def get_time(value):
+    time=re.match('(\d+?/\d+?/\d+?) | 分类',value)
+    if time:
+        return time.group(1)
+
+
+def get_tags(value):
+    list=re.findall('>(.*?)</a>',value)
+    res=list[2]
+    for tag in list[3:]:
+        res=res+" , "+tag
+    return res
+
+
+class ImportNewItemLoader(ItemLoader):
+    default_output_processor = TakeFirst()
+
+class InputNewItem(scrapy.Item):
+    title=scrapy.Field()
+    url=scrapy.Field()
+    url_id=scrapy.Field()
+    update_time=scrapy.Field(
+        input_processor=MapCompose(get_time)
+    )
+    category=scrapy.Field()
+    tags=scrapy.Field(
+        input_processor=MapCompose(get_tags)
+    )
+    content=scrapy.Field()
+
+    def get_insert_sql(self):
+        insert_sql="""
+            insert into inputnew(title,url,url_id,update_time,category,tags,content)
+            VALUES (%s,%s,%s,%s,%s,%s,%s)
+        """
+        parms=(
+            self["title"],self["url"],self["url_id"],self["update_time"],self["category"],self["tags"],
+            self["content"]
+        )
+        return insert_sql,parms
+

@@ -27,8 +27,10 @@ def is_login():
     inbox_url="https://www.zhihu.com/inbox"
     response = session.get(inbox_url,headers=header,allow_redirects=False)
     if response.status_code!=200:
+        print("NO OK")
         return False
     else:
+        print("OK")
         return True
 
 
@@ -95,5 +97,5 @@ def zhihu_login(account,passwd):
     session.cookies.save()
 #
 # is_login()
-# zhihu_login("18858903314","19960411kang")
+zhihu_login("18858903314","19960411kang")
 
