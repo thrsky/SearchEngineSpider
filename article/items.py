@@ -50,6 +50,10 @@ class AriticleItemLoader(ItemLoader):
     default_output_processor = TakeFirst()
 
 
+class LagouJobItemLoader(ItemLoader):
+    default_output_processor = TakeFirst()
+
+
 class JobboleArticleItem(scrapy.Item):
     title=scrapy.Field()
     create_date=scrapy.Field(
@@ -76,3 +80,24 @@ class JobboleArticleItem(scrapy.Item):
     )
     content=scrapy.Field()
     #autor=scrapy.Field()
+
+
+class LagouJobItem(scrapy.Item):
+    url=scrapy.Field()
+    url_object_id=scrapy.Field()
+    title=scrapy.Field()
+    salary_min=scrapy.Field()
+    salary_max=scrapy.Field()
+    job_city=scrapy.Field()
+    work_years_min=scrapy.Field()
+    work_years_max=scrapy.Field()
+    degree_need=scrapy.Field()
+    job_time=scrapy.Field()
+    publish_time=scrapy.Field()
+    tags=scrapy.Field()
+    job_advantage=scrapy.Field()
+    job_desc=scrapy.Field()
+    job_addr=scrapy.Field()
+    company=scrapy.Field()
+    company_url=scrapy.Field()
+    crawl_time=scrapy.Field()
