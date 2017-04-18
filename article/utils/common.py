@@ -35,4 +35,18 @@ def get_year(value):
     else:
         return 0,0
 
-print(get_year('经验1-3年 /'))
+
+def getJob_addr(value):
+    li=re.findall(r'#filterBox">(.*?)</a>',value)
+    return (" - ").join(li)
+
+
+def extract_num(text):
+    #从字符串中提取出数字
+    match_re = re.match(".*?(\d+).*", text)
+    if match_re:
+        nums = int(match_re.group(1))
+    else:
+        nums = 0
+
+    return nums
