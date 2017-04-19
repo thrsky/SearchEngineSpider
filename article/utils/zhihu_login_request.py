@@ -7,7 +7,7 @@ except:
 import re
 
 session = requests.session()
-session.cookies=cookielib.LWPCookieJar(filename="cookies.txt")
+session.cookies=cookielib.LWPCookieJar(filename="zhihu_cookies.txt")
 try:
     session.cookies.load(ingore_discard=True)
 except:
@@ -98,4 +98,5 @@ def zhihu_login(account,passwd):
 #
 # is_login()
 zhihu_login("18858903314","19960411kang")
+is_login()
 

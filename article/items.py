@@ -186,3 +186,19 @@ class InputNewItem(scrapy.Item):
         )
         return insert_sql,parms
 
+
+#====================================================================================
+#电影
+class MovieItemLoader(ItemLoader):
+    default_output_processor = TakeFirst()
+
+class movieItem(scrapy.Item):
+    pass
+
+
+#=====================================================================================
+class ZhihuQuestionItem(ItemLoader):
+    default_output_processor = TakeFirst()
+
+class ZhihuAnswerItem(scrapy.Item):
+    pass
