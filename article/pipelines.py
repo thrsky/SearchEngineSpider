@@ -118,7 +118,7 @@ class ArticleImagePipeline(ImagesPipeline):
 
 #=============================================================================================
 #拉勾网 数据
-class LagouJobPipeline(object):
+class DataMySQLPipeline(object):
     def __init__(self, dbpool):
         self.dbpool = dbpool
 

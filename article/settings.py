@@ -33,7 +33,7 @@ ROBOTSTXT_OBEY = False
 #CONCURRENT_REQUESTS_PER_IP = 16
 
 # Disable cookies (enabled by default)
-#COOKIES_ENABLED = False
+COOKIES_ENABLED = True
 
 # Disable Telnet Console (enabled by default)
 #TELNETCONSOLE_ENABLED = False
@@ -53,9 +53,9 @@ DEFAULT_REQUEST_HEADERS = {
 
 # Enable or disable downloader middlewares
 # See http://scrapy.readthedocs.org/en/latest/topics/downloader-middleware.html
-#DOWNLOADER_MIDDLEWARES = {
-#    'article.middlewares.MyCustomDownloaderMiddleware': 543,
-#}
+DOWNLOADER_MIDDLEWARES = {
+    #'article.middlewares.MyCustomDownloaderMiddleware': 543,
+}
 
 # Enable or disable extensions
 # See http://scrapy.readthedocs.org/en/latest/topics/extensions.html
@@ -71,7 +71,7 @@ ITEM_PIPELINES = {
     #'article.pipelines.ArticleImagePipeline':1,
     #'article.pipelines.JsonWithEncodingPipeline':2,
     #'article.pipelines.JsonExporterPipeline':3
-    'article.pipelines.LagouJobPipeline':3
+    'article.pipelines.DataMySQLPipeline':3
 }
 IMAGES_URLS_FIELD="front_image_url"
 project_dir = os.path.abspath(os.path.dirname(__file__))
@@ -109,3 +109,6 @@ MYSQL_HOST="localhost"
 MYSQL_DBNAME="articleSpider"
 MYSQL_USER="root"
 MYSQL_PASSWORD="19960411"
+
+SQL_DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
+SQL_DATE_FORMAT = "%Y-%m-%d"
