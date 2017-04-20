@@ -54,8 +54,10 @@ DEFAULT_REQUEST_HEADERS = {
 # Enable or disable downloader middlewares
 # See http://scrapy.readthedocs.org/en/latest/topics/downloader-middleware.html
 DOWNLOADER_MIDDLEWARES = {
-    #'article.middlewares.MyCustomDownloaderMiddleware': 543,
+    #'article.utils.middlewares.RandomUserAgentMiddleware': 400,
 }
+
+RAMDOM_UA_TYPE = "random"
 
 # Enable or disable extensions
 # See http://scrapy.readthedocs.org/en/latest/topics/extensions.html
@@ -73,6 +75,7 @@ ITEM_PIPELINES = {
     #'article.pipelines.JsonExporterPipeline':3
     'article.pipelines.DataMySQLPipeline':3
 }
+#图片下载位置
 IMAGES_URLS_FIELD="front_image_url"
 project_dir = os.path.abspath(os.path.dirname(__file__))
 IMAGES_STORE= os.path.join(project_dir,"images")
@@ -84,6 +87,8 @@ import sys
 BASE_DIR=os.path.dirname(os.path.abspath(os.path.dirname(__file__)))
 print(BASE_DIR)
 sys.path.insert(0,os.path.join(BASE_DIR,'article'))
+
+
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See http://doc.scrapy.org/en/latest/topics/autothrottle.html
 #AUTOTHROTTLE_ENABLED = True
