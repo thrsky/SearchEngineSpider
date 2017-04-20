@@ -35,6 +35,11 @@ class ZhihuSpider(scrapy.Spider):
         'User-Agent': "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:51.0) Gecko/20100101 Firefox/51.0"
     }
 
+    #覆盖 默认setting中的 值
+    #知乎的模拟登录是需要cookie的  其他可以是禁用的 所以在setting中的值是FALSE 在这里覆盖成TRUE
+    custom_settings = {
+        "COOKIES_ENABLED":True
+    }
     def parse(self, response):
         """
                     提取HTML中所有的URL，并跟踪这些URL
