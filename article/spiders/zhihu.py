@@ -11,15 +11,14 @@ import re
 import json
 import datetime
 import requests
-from article.items import ZhihuAnswerItem,ZhihuAnswerItemLoader,ZhihuQuesItem,ZhihuQuesItemLoader
+from article.items import ZhihuAnswerItem,ZhihuQuesItem,ZhihuQuesItemLoader
 try:
     import urlparse as parse
 except:
     from urllib import parse
 
+from scrapy.http import Request
 import scrapy,datetime
-from scrapy.loader import ItemLoader
-
 session =requests.session()
 
 class ZhihuSpider(scrapy.Spider):
@@ -49,9 +48,9 @@ class ZhihuSpider(scrapy.Spider):
             match_obj = re.match('(.*zhihu.com/question/(\d+))(/|$).*.', obj)
             if match_obj:
                 request_url = match_obj.group(1)
-                yield scrapy.Request(request_url,headers=self.headers,callback=self.parse_question)
+                yield Request(request_url,headers=self.headers,callback=self.parse_question)
             else:
-                yield scrapy.Request(obj,headers=self.headers,callback=self.parse)
+                yield Request(obj,headers=self.headers,callback=self.parse)
 
     #提取问题属性
     def parse_question(self, response):
@@ -61,7 +60,7 @@ class ZhihuSpider(scrapy.Spider):
             question_id=0
             if qu_re:
                 question_id=int(qu_re.group(2))
-            item_loader = ItemLoader(item=ZhihuQuesItem(),response=response)
+            item_loader = ZhihuQuesItemLoader(item=ZhihuQuesItem(),response=response)
             item_loader.add_value('question_id',question_id)
             item_loader.add_css('title','h1.QuestionHeader-title::text')
             item_loader.add_css('content','.QuestionHeader-detail')
@@ -70,16 +69,14 @@ class ZhihuSpider(scrapy.Spider):
             item_loader.add_xpath("comments_num",'//*[@class="QuestionHeader-actions"]/button[1]/text()')
             item_loader.add_css('watch_user_num','.NumberBoard-value::text')
             item_loader.add_css("topic", ".QuestionHeader-topics .Popover div::text")
-
             question_item = item_loader.load_item()
 
         else:
-            match_obj = re.match("(.*zhihu.com/question/(\d+))(/|$).*", response.url)
-            question_id=0
-            if match_obj:
-                question_id = int(match_obj.group(2))
-
-            item_loader = ItemLoader(item=ZhihuQuesItem(), response=response)
+            qu_re = re.match("(.*zhihu.com/question/(\d+))(/|$).*", response.url)
+            question_id = 0
+            if qu_re:
+                question_id = int(qu_re.group(2))
+            item_loader = ZhihuQuesItemLoader(item=ZhihuQuesItem(), response=response)
             # item_loader.add_css("title", ".zh-question-title h2 a::text")
             item_loader.add_xpath("title",
                                   "//*[@id='zh-question-title']/h2/a/text()|//*[@id='zh-question-title']/h2/span/text()")
@@ -94,13 +91,14 @@ class ZhihuSpider(scrapy.Spider):
             item_loader.add_css("topic", ".zm-tag-editor-labels a::text")
             question_item = item_loader.load_item()
 
-        yield scrapy.Request(self.start_answer_url.format(question_id,20,0),
-                             headers=self.headers,callback=self.parse_answer)
+        yield Request(url=self.start_answer_url.format(question_id, 20, 0), headers=self.headers, callback=self.parse_answer)
         yield question_item
 
 
+    #回答的属性存储在一Json中
     def parse_answer(self, response):
         #传进来的是json字符串
+        print(" --------------- parse ---------> answer \n")
         ans_json=json.loads(response.text)
         is_end=ans_json["paging"]["is_end"]
         next_url=ans_json["paging"]["next"]
@@ -124,9 +122,12 @@ class ZhihuSpider(scrapy.Spider):
             yield scrapy.Request(next_url, headers=self.headers, callback=self.parse_answer)
 
 
+    #scrapy爬虫的入口函数
+    #一般都要重写来 执行我们自己的一些逻辑
     def start_requests(self):
         return [scrapy.Request('https://www.zhihu.com/#signin', headers=self.headers, callback=self.login)]
 
+    #第一步的登录
     def login(self, response):
         response_text = response.text
         match_obj = re.match('.*name="_xsrf" value="(.*?)"', response_text, re.DOTALL)
@@ -139,7 +140,7 @@ class ZhihuSpider(scrapy.Spider):
             post_data = {
                 "_xsrf": xsrf,
                 "phone_num": "18858903314",
-                "password": "19960411kang",
+                "password": "admin",
                 "captcha":""
             }
 
