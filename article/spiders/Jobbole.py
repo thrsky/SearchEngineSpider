@@ -7,7 +7,10 @@ from urllib import parse
 from article.items import JobboleArticleItem,AriticleItemLoader
 from article.utils.common import get_md5
 from scrapy.loader import ItemLoader
-
+from selenium import webdriver
+#引入信号量 机制
+from scrapy.xlib.pydispatch import dispatcher
+from scrapy import signals
 #伯乐在线 文章爬取
 
 
@@ -15,6 +18,17 @@ class JobboleSpider(scrapy.Spider):
     name = "Jobbole"
     allowed_domains = ["blog.jobbole.com"]
     start_urls = ['http://blog.jobbole.com/all-posts/']
+
+
+    #在这里我们初始化一个Chrome 这样一来就不会每个URL打开一个Chrome了
+    def  __init__(self):
+        self.browser=webdriver.Chrome(executable_path="G:/Python/爬虫/scrapy/chromedriver.exe")
+        super(JobboleSpider,self).__init__()
+        dispatcher.connect(self.spider_closed,signals.spider_closed)
+
+    def spider_closed(self,spider):
+        #当爬虫退出的时候  退出Chrome
+        self.browser.quit()
 
     def parse(self, response):
         """

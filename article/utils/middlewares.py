@@ -3,6 +3,7 @@ from article.tools.xichi import getIp
 import logging
 from fake_useragent import UserAgent
 
+
 logging=logging.getLogger(__name__)
 
 class RandomUserAgentMiddleware(object):
@@ -29,3 +30,23 @@ class RandomProxyMiddleware(object):
     def process_request(self,request,spider):
         get_ip=getIp()
         request.meta["proxy"]=get_ip.get_random_ip()
+
+
+from scrapy.http import HtmlResponse
+class JsPageMiddleware(object):
+
+    def process_request(self, request, spider):
+        if spider.name == "Jobbole":
+            spider.browser.get(request.url)
+            import time
+            time.sleep(3)
+            print("访问：{0}".format(request.url))
+
+            #请求过后就不用再用scrapy的下载器来下载了
+            return HtmlResponse(url=spider.browser.current_url,
+                                body=spider.browser.page_source,
+                                encoding="utf-8",
+                                request=request
+                                )
+
+        pass
