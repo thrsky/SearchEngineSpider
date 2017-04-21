@@ -55,7 +55,7 @@ DEFAULT_REQUEST_HEADERS = {
 # Enable or disable downloader middlewares
 # See http://scrapy.readthedocs.org/en/latest/topics/downloader-middleware.html
 DOWNLOADER_MIDDLEWARES = {
-    'article.utils.middlewares.RandomUserAgentMiddleware': 400,
+    'article.utils.middlewares.JsPageMiddleware': 1,
 }
 
 RAMDOM_UA_TYPE = "random"
